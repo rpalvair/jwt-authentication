@@ -26,17 +26,17 @@ public class UserResource {
 
     @GetMapping("/{email}")
     public ResponseEntity<?> getUserByEmail(@PathVariable("email") final String email) {
-        LOGGER.debug("Recuperation user avec email {}", email);
+        LOGGER.debug("Get user with email {}", email);
         try {
             return ResponseEntity.ok(
                     userRepository.getByUserName(email)
             );
         } catch (final UserNotFoundException exception) {
-            final String message = String.format("Utilisateur %s introuvable", email);
+            final String message = String.format("User with email %s not found", email);
             LOGGER.error(message, exception);
             return new ResponseEntity<>(new UserNotFound(message), HttpStatus.NOT_FOUND);
         } catch (final AuthentificationException exception) {
-            final String message = String.format("Erreur lors de la recuperation de l'utilisateur %s", email);
+            final String message = String.format("Error while searching user with email %s", email);
             LOGGER.error(message, exception);
             return new ResponseEntity<>(new AuthentificationServerError(message), HttpStatus.INTERNAL_SERVER_ERROR);
         }

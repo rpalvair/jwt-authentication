@@ -25,15 +25,15 @@ public class AuthentificationResource {
 
     @PostMapping("/authentifier")
     public ResponseEntity<?> authentifier(@RequestBody final AuthenticationCommand authenticationCommand) {
-        LOGGER.debug("Demande d'authentification recue [{}]", authenticationCommand);
+        LOGGER.debug("Request to authenticate [{}]", authenticationCommand);
         final String email = authenticationCommand.getEmail();
         if (StringUtils.isBlank(email)) {
-            return new ResponseEntity<>(new AuthenticationBadRequest("L'email doit être renseigné"),
+            return new ResponseEntity<>(new AuthenticationBadRequest("Email is mandatory"),
                     HttpStatus.BAD_REQUEST);
         }
         final String password = authenticationCommand.getPassword();
         if (StringUtils.isBlank(password)) {
-            return new ResponseEntity<>(new AuthenticationBadRequest("Le mot de passe doit être renseigné"),
+            return new ResponseEntity<>(new AuthenticationBadRequest("Password is mandatory"),
                     HttpStatus.BAD_REQUEST);
         }
         try {
@@ -41,12 +41,12 @@ public class AuthentificationResource {
                     jwtAuthentificationService.authenticate(authenticationCommand)
             );
         } catch (final UserNotFoundException ex) {
-            LOGGER.warn("Utilisateur non trouvé avec ces informations", ex);
-            return new ResponseEntity<>(new UserNotFound("Aucun utilisateur trouvé avec ces informations"),
+            LOGGER.warn("User not found", ex);
+            return new ResponseEntity<>(new UserNotFound("No user found"),
                     HttpStatus.NOT_FOUND);
             //FIXME: affiner les exceptions
         } catch (final Exception exception) {
-            LOGGER.error("Erreur lors de la tentative d'authentification", exception);
+            LOGGER.error("Errors while trying to authenticate user", exception);
             return new ResponseEntity<>(new AuthentificationServerError(exception.getMessage()),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }

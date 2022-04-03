@@ -16,13 +16,13 @@ public class HeaderExtractor {
 
     public String getAuthorizationToken(final HttpServletRequest request) {
         final String authorization = request.getHeader(HEADER_AUTHORIZATION);
-        LOGGER.debug("authorization {}", authorization);
+        LOGGER.debug("Authorization header {}", authorization);
         if (StringUtils.isNotBlank(authorization) && authorization.startsWith(BEARER)) {
             final String token = authorization.substring(BEARER.length());
-            LOGGER.debug("token [{}]", token);
+            LOGGER.debug("Token extracted from Authorization header [{}]", token);
             return token;
         }
-        LOGGER.warn("Mauvais format pour le header Authorization");
+        LOGGER.warn("Bad format for Authorization header");
         return null;
     }
 }

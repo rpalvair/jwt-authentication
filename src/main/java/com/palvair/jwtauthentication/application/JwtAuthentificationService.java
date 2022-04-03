@@ -31,19 +31,18 @@ public class JwtAuthentificationService {
         this.jwtTokenHelper = jwtTokenHelper;
     }
 
-
     public JwtResponse authenticate(final AuthenticationCommand command) throws Exception {
         final UserDetails userDetails = authenticateInternal(command);
         final String token = jwtTokenHelper.generateToken(userDetails);
-        LOGGER.debug("Token = [{}]", token);
+        LOGGER.debug("Generated token = [{}]", token);
         return new JwtResponse(token);
     }
 
     private UserDetails authenticateInternal(final AuthenticationCommand command) throws Exception {
         try {
-            LOGGER.debug("Authenticate avec la command [{}]", command);
+            LOGGER.debug("Authenticate with command [{}]", command);
             final Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(command.getEmail(), command.getPassword()));
-            LOGGER.debug("Authentication obtenu [{}]", authentication);
+            LOGGER.debug("Authentication successful [{}]", authentication);
             return (UserDetails) authentication.getPrincipal();
         } catch (final DisabledException exception) {
             throw new Exception("USER_DISABLED", exception);

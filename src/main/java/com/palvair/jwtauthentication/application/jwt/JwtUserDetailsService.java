@@ -24,9 +24,9 @@ public class JwtUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
-        LOGGER.debug("Chargement du user [{}]", username);
-        final User userName = userRepository.getByUserName(username);
-        LOGGER.debug("User chargé = [{}]", userName);
-        return new User(userName.getNom(), userName.getPrenom(), userName.getPassword(), userName.getUsername());
+        LOGGER.debug("Loading user [{}]", username);
+        final User user = userRepository.getByUserName(username);
+        LOGGER.debug("User loaded = [{}]", user);
+        return new User(user.getNom(), user.getPrenom(), user.getPassword(), user.getUsername());
     }
 }

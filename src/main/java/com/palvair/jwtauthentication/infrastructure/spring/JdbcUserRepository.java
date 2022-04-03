@@ -40,11 +40,11 @@ public class JdbcUserRepository implements UserRepository {
         try {
             return jdbcOperations.queryForObject(sql, sqlParameterSource, this::mapUser);
         } catch (final EmptyResultDataAccessException erdaex) {
-            final String message = String.format("Aucun utilisateur trouvé avec l'email %s", email);
+            final String message = String.format("No user found with email %s", email);
             LOGGER.warn(message, erdaex);
             throw new UserNotFoundException(message, erdaex);
         } catch (final DataAccessException daex) {
-            final String message = String.format("Erreur pendant la récupération de l'utilisateur avec l'email %s", email);
+            final String message = String.format("Error while searching user with email %s", email);
             LOGGER.warn(message, daex);
             throw new AuthentificationException(message, daex);
         }
@@ -62,11 +62,11 @@ public class JdbcUserRepository implements UserRepository {
         try {
             return jdbcOperations.queryForObject(sql, sqlParameterSource, this::mapUser);
         } catch (final EmptyResultDataAccessException erdaex) {
-            final String message = String.format("Aucun utilisateur trouvé avec l'email %s", email);
+            final String message = String.format("No user found with email %s", email);
             LOGGER.warn(message, erdaex);
             throw new UserNotFoundException(message, erdaex);
         } catch (final DataAccessException daex) {
-            final String message = String.format("Erreur pendant la récupération de l'utilisateur avec l'email %s", email);
+            final String message = String.format("Error while searching user with email %s", email);
             LOGGER.warn(message, daex);
             throw new AuthentificationException(message, daex);
         }
