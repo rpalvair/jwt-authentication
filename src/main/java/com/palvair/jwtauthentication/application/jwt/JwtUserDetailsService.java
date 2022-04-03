@@ -22,7 +22,6 @@ public class JwtUserDetailsService implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
-    //FIXME: respecter le contrat et renvoyer UsernameNotFoundException
     @Override
     public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
         LOGGER.debug("Chargement du user [{}]", username);
