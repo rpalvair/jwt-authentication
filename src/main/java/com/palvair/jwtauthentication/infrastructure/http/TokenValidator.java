@@ -24,8 +24,9 @@ public class TokenValidator {
         this.jwtTokenHelper = jwtTokenHelper;
     }
 
-    public UserDetails validateToken(final String token, final String username) {
+    public UserDetails validateToken(final String token) {
         try {
+            final String username = jwtTokenHelper.getUsernameFromToken(token);
             final UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(username);
             if (jwtTokenHelper.validateToken(token, userDetails)) {
                 LOGGER.debug("Token valide. userDetails = [{}]", userDetails);

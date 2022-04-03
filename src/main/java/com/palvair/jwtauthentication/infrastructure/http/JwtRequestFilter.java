@@ -1,6 +1,5 @@
 package com.palvair.jwtauthentication.infrastructure.http;
 
-import com.palvair.jwtauthentication.application.jwt.JwtTokenHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,15 +24,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtRequestFilter.class);
 
-    private final JwtTokenHelper jwtTokenHelper;
     private final TokenValidator tokenValidator;
     private final HeaderExtractor headerExtractor;
 
     @Autowired
-    public JwtRequestFilter(final JwtTokenHelper jwtTokenHelper,
-                            final TokenValidator tokenValidator,
+    public JwtRequestFilter(final TokenValidator tokenValidator,
                             final HeaderExtractor headerExtractor) {
-        this.jwtTokenHelper = jwtTokenHelper;
         this.tokenValidator = tokenValidator;
         this.headerExtractor = headerExtractor;
     }
@@ -46,10 +42,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         LOGGER.debug("Requete recue");
         final String token = headerExtractor.getAuthorizationToken(request);
         if (StringUtils.isNotBlank(token)) {
-            final String username = jwtTokenHelper.getUsernameFromToken(token);
-            LOGGER.debug("username [{}]", username);
-            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                final UserDetails userDetails = tokenValidator.validateToken(token, username);
+            if (SecurityContextHolder.getContext().getAuthentication() == null) {
+                final UserDetails userDetails = tokenValidator.validateToken(token);
                 if (userDetails != null) {
                     updateSecurityContext(request, userDetails);
                 }

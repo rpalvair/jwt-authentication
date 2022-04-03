@@ -1,6 +1,5 @@
 package com.palvair.jwtauthentication.infrastructure.http;
 
-import com.palvair.jwtauthentication.application.jwt.JwtTokenHelper;
 import com.palvair.jwtauthentication.domain.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,8 +29,6 @@ class JwtRequestFilterTest {
     @Mock
     private HeaderExtractor headerExtractor;
     @Mock
-    private JwtTokenHelper jwtTokenHelper;
-    @Mock
     private TokenValidator tokenValidator;
 
     @Test
@@ -40,8 +37,7 @@ class JwtRequestFilterTest {
         final User user = new User(null, null, null, USERNAME);
 
         when(headerExtractor.getAuthorizationToken(request)).thenReturn(TOKEN);
-        when(jwtTokenHelper.getUsernameFromToken(TOKEN)).thenReturn(USERNAME);
-        when(tokenValidator.validateToken(TOKEN, USERNAME))
+        when(tokenValidator.validateToken(TOKEN))
                 .thenReturn(user);
 
         jwtRequestFilter.doFilterInternal(request, new MockHttpServletResponse(), new MockFilterChain());
@@ -57,8 +53,7 @@ class JwtRequestFilterTest {
         final User user = new User(null, null, null, USERNAME);
 
         when(headerExtractor.getAuthorizationToken(request)).thenReturn(TOKEN);
-        when(jwtTokenHelper.getUsernameFromToken(TOKEN)).thenReturn(USERNAME);
-        when(tokenValidator.validateToken(TOKEN, USERNAME))
+        when(tokenValidator.validateToken(TOKEN))
                 .thenReturn(null);
 
         jwtRequestFilter.doFilterInternal(request, new MockHttpServletResponse(), new MockFilterChain());

@@ -18,6 +18,9 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class TokenValidatorTest {
 
+    private static final String USERNAME = "r.palvair@gmail.com";
+    private static final String TOKEN = "token";
+
     @InjectMocks
     private TokenValidator tokenValidator;
     @Mock
@@ -27,29 +30,41 @@ class TokenValidatorTest {
 
     @Test
     public void should_return_user_details_when_token_valide() {
-        final User user = new User("Palvair", "Ruddy", "motdepssse", "r.palvair@gmail.com");
+        final User user = new User("Palvair", "Ruddy", "motdepssse", USERNAME);
 
-        when(jwtUserDetailsService.loadUserByUsername("r.palvair@gmail.com")).thenReturn(user);
-        when(jwtTokenHelper.validateToken("token", user)).thenReturn(true);
+        when(jwtTokenHelper.getUsernameFromToken(TOKEN)).thenReturn(USERNAME);
+        when(jwtUserDetailsService.loadUserByUsername(USERNAME)).thenReturn(user);
+        when(jwtTokenHelper.validateToken(TOKEN, user)).thenReturn(true);
 
-        final UserDetails userDetails = tokenValidator.validateToken("token", "r.palvair@gmail.com");
+        final UserDetails userDetails = tokenValidator.validateToken(TOKEN);
 
         assertThat(userDetails).isNotNull()
                 .extracting(UserDetails::getUsername)
-                .isEqualTo("r.palvair@gmail.com");
+                .isEqualTo(USERNAME);
 
     }
 
     @Test
     public void should_return_false_when_token_invalide() {
-        final User user = new User("Palvair", "Ruddy", "motdepssse", "r.palvair@gmail.com");
+        final User user = new User("Palvair", "Ruddy", "motdepssse", USERNAME);
 
-        when(jwtUserDetailsService.loadUserByUsername("r.palvair@gmail.com")).thenReturn(user);
-        when(jwtTokenHelper.validateToken("token", user)).thenReturn(false);
+        when(jwtTokenHelper.getUsernameFromToken(TOKEN)).thenReturn(USERNAME);
+        when(jwtUserDetailsService.loadUserByUsername(USERNAME)).thenReturn(user);
+        when(jwtTokenHelper.validateToken(TOKEN, user)).thenReturn(false);
 
-        final UserDetails userDetails = tokenValidator.validateToken("token", "r.palvair@gmail.com");
+        final UserDetails userDetails = tokenValidator.validateToken(TOKEN);
 
         assertThat(userDetails).isNull();
+    }
 
+    @Test
+    void should_return_null_when_username_not_found_in_token() {
+        when(jwtTokenHelper.getUsernameFromToken(TOKEN)).thenReturn(null);
+        when(jwtUserDetailsService.loadUserByUsername(null)).thenReturn(null);
+        when(jwtTokenHelper.validateToken(TOKEN, null)).thenReturn(false);
+
+        final UserDetails userDetails = tokenValidator.validateToken(TOKEN);
+
+        assertThat(userDetails).isNull();
     }
 }
