@@ -29,10 +29,10 @@ public class TokenValidator {
             final String username = jwtTokenHelper.getUsernameFromToken(token);
             final UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(username);
             if (jwtTokenHelper.validateToken(token, userDetails)) {
-                LOGGER.debug("Token valide. userDetails = [{}]", userDetails);
+                LOGGER.debug("Token is valid. userDetails = [{}]", userDetails);
                 return userDetails;
             }
-            LOGGER.warn("Token invalide [{}]", token);
+            LOGGER.warn("Invalid token [{}]", token);
         } catch (final AuthentificationError exception) {
             LOGGER.error(exception.getMessage());
         }
