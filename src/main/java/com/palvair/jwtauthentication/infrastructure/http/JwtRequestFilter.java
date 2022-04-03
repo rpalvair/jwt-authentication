@@ -1,6 +1,5 @@
 package com.palvair.jwtauthentication.infrastructure.http;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +16,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Optional;
 
-//FIXME : ajouter tests unitaires
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
@@ -34,21 +33,16 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         this.headerExtractor = headerExtractor;
     }
 
-    //FIXME: Improve readability
     @Override
     protected void doFilterInternal(final HttpServletRequest request,
                                     final HttpServletResponse httpServletResponse,
                                     final FilterChain filterChain) throws ServletException, IOException {
-        LOGGER.debug("Requete recue");
         final String token = headerExtractor.getAuthorizationToken(request);
-        if (StringUtils.isNotBlank(token)) {
-            if (SecurityContextHolder.getContext().getAuthentication() == null) {
-                final UserDetails userDetails = tokenValidator.validateToken(token);
-                if (userDetails != null) {
-                    updateSecurityContext(request, userDetails);
-                }
-            }
-        }
+        LOGGER.debug("Request received with jwt [{}]", token);
+        Optional.of(token)
+                .filter(value -> SecurityContextHolder.getContext().getAuthentication() == null)
+                .map(tokenValidator::validateToken)
+                .ifPresent(userDetails -> updateSecurityContext(request, userDetails));
         filterChain.doFilter(request, httpServletResponse);
     }
 
