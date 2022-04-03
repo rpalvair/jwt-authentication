@@ -50,7 +50,6 @@ class JwtRequestFilterTest {
     @Test
     void should_not_set_security_context_when_token_is_invalid() throws ServletException, IOException {
         final MockHttpServletRequest request = new MockHttpServletRequest();
-        final User user = new User(null, null, null, USERNAME);
 
         when(headerExtractor.getAuthorizationToken(request)).thenReturn(TOKEN);
         when(tokenValidator.validateToken(TOKEN))
