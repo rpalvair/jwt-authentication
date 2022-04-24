@@ -41,15 +41,24 @@ public class JwtTokenHelper {
         return null;
     }
 
-    public Date getExpirationDateFromToken(final String token) {
+    public String generateToken(final UserDetails userDetails) {
+        final Map<String, Object> claims = new HashMap<>();
+        return doGenerateToken(claims, userDetails.getUsername());
+    }
+
+    public boolean validateToken(final String token, final UserDetails userDetails) {
+        final String username = getUsernameFromToken(token);
+        return StringUtils.isNotBlank(username) && username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+    }
+
+    private Date getExpirationDateFromToken(final String token) {
         return getClaimFromToken(token, Claims::getExpiration);
     }
 
-    public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
+    private <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = getAllClaimsFromToken(token);
         return claimsResolver.apply(claims);
     }
-
 
     private Claims getAllClaimsFromToken(final String token) {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
@@ -60,11 +69,6 @@ public class JwtTokenHelper {
         return expiration.before(new Date());
     }
 
-    public String generateToken(final UserDetails userDetails) {
-        final Map<String, Object> claims = new HashMap<>();
-        return doGenerateToken(claims, userDetails.getUsername());
-    }
-
     private String doGenerateToken(final Map<String, Object> claims, final String subject) {
         return Jwts.builder().setClaims(claims)
                 .setSubject(subject)
@@ -72,10 +76,5 @@ public class JwtTokenHelper {
                 .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY))
                 .signWith(key)
                 .compact();
-    }
-
-    public boolean validateToken(final String token, final UserDetails userDetails) {
-        final String username = getUsernameFromToken(token);
-        return StringUtils.isNotBlank(username) && username.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 }
