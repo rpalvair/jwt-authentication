@@ -1,6 +1,7 @@
 package com.palvair.jwtauthentication.infrastructure.http;
 
 import com.palvair.jwtauthentication.domain.User;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,6 +32,11 @@ class JwtRequestFilterTest {
     private HeaderExtractor headerExtractor;
     @Mock
     private TokenValidator tokenValidator;
+
+    @BeforeAll
+    public static void beforeAll() {
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
 
     @Test
     void should_set_security_context_when_token_is_valid() throws ServletException, IOException {
