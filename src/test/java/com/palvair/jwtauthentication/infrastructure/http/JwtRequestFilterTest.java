@@ -16,6 +16,7 @@ import javax.servlet.ServletException;
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -58,5 +59,10 @@ class JwtRequestFilterTest {
         jwtRequestFilter.doFilterInternal(request, new MockHttpServletResponse(), new MockFilterChain());
 
         assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
+    }
+
+    @Test
+    void should_not_throw_exception_when_token_is_missing() {
+        assertThatNoException().isThrownBy(() -> jwtRequestFilter.doFilterInternal(new MockHttpServletRequest(), new MockHttpServletResponse(), new MockFilterChain()));
     }
 }

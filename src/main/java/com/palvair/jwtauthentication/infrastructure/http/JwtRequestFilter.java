@@ -39,7 +39,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                                     final FilterChain filterChain) throws ServletException, IOException {
         final String token = headerExtractor.getAuthorizationToken(request);
         LOGGER.debug("Request received with jwt [{}]", token);
-        Optional.of(token)
+        Optional.ofNullable(token)
                 .filter(value -> SecurityContextHolder.getContext().getAuthentication() == null)
                 .map(tokenValidator::validateToken)
                 .ifPresent(userDetails -> updateSecurityContext(request, userDetails));
