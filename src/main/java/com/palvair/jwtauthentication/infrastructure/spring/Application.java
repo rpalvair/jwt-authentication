@@ -9,7 +9,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import javax.sql.DataSource;
 
-@SpringBootApplication(scanBasePackages = "com.palvair.jwtauthentification")
+@SpringBootApplication(scanBasePackages = "com.palvair.jwtauthentication")
 public class Application {
 
 
