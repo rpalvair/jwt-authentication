@@ -18,16 +18,9 @@ spring:
 
 logging:
   level:
-    com.heyou: DEBUG
+    com.palvair: DEBUG
     com.netflix.eureka: OFF
     com.netflix.discovery: OFF
-
-keys:
-  public: public.pem
-  private: private.key
-
-crypto:
-  algorithme: RSA
 
 jwt:
   secret: 'The specified key byte array is 48 bits which is not secure enough for any JWT HMAC-SHA algorithm.'
