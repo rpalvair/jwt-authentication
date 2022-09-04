@@ -13,6 +13,7 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -41,8 +42,10 @@ public class JwtAuthentificationService {
     private UserDetails authenticateInternal(final AuthenticationCommand command) throws Exception {
         try {
             LOGGER.debug("Authenticate with command [{}]", command);
-            final Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(command.getEmail(), command.getPassword()));
+            final UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(command.getEmail(), command.getPassword());
+            final Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
             LOGGER.debug("Authentication successful [{}]", authentication);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
             return (UserDetails) authentication.getPrincipal();
         } catch (final DisabledException exception) {
             throw new Exception("USER_DISABLED", exception);

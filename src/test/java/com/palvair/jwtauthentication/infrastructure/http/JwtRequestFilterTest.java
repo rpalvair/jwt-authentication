@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -45,7 +46,7 @@ class JwtRequestFilterTest {
 
         when(headerExtractor.getAuthorizationToken(request)).thenReturn(TOKEN);
         when(tokenValidator.validateToken(TOKEN))
-                .thenReturn(user);
+                .thenReturn(new UsernamePasswordAuthenticationToken(user, null, null));
 
         jwtRequestFilter.doFilterInternal(request, new MockHttpServletResponse(), new MockFilterChain());
 

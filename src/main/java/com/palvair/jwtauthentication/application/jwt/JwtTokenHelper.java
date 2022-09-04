@@ -1,13 +1,16 @@
 package com.palvair.jwtauthentication.application.jwt;
 
+import com.palvair.jwtauthentication.domain.User;
+import com.palvair.jwtauthentication.domain.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -27,9 +30,11 @@ public class JwtTokenHelper {
     public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 1000;
 
     private final Key key;
+    private final UserRepository userRepository;
 
-    public JwtTokenHelper(final @Value("${jwt.secret}") String secret) {
+    public JwtTokenHelper(final @Value("${jwt.secret}") String secret, final UserRepository userRepository) {
         this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        this.userRepository = userRepository;
     }
 
     public String getUsernameFromToken(final String token) {
@@ -46,9 +51,13 @@ public class JwtTokenHelper {
         return doGenerateToken(claims, userDetails.getUsername());
     }
 
-    public boolean validateToken(final String token, final UserDetails userDetails) {
-        final String username = getUsernameFromToken(token);
-        return StringUtils.isNotBlank(username) && username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+    public Authentication validateToken(final String token) {
+        if(!isTokenExpired(token)) {
+            final String username = getUsernameFromToken(token);
+            final User user = userRepository.getByUserName(username);
+            return new UsernamePasswordAuthenticationToken(user, null, null);
+        }
+        return null;
     }
 
     private Date getExpirationDateFromToken(final String token) {

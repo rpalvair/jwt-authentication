@@ -11,6 +11,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -38,12 +40,14 @@ class TokenValidatorTest {
         final User user = new User("Palvair", "Ruddy", "motdepssse", USERNAME);
         SecurityContextHolder.getContext().setAuthentication(new TestingAuthenticationToken(user, null));
 
-        when(jwtTokenHelper.validateToken(TOKEN, user)).thenReturn(true);
+        when(jwtTokenHelper.validateToken(TOKEN)).thenReturn(new UsernamePasswordAuthenticationToken(user, null, null));
 
-        final UserDetails userDetails = tokenValidator.validateToken(TOKEN);
+        final Authentication userDetails = tokenValidator.validateToken(TOKEN);
 
         assertThat(userDetails).isNotNull()
-                .extracting(UserDetails::getUsername)
+                .extracting(Authentication::getPrincipal)
+                .isInstanceOf(UserDetails.class)
+                .extracting("username")
                 .isEqualTo(USERNAME);
     }
 
@@ -52,18 +56,18 @@ class TokenValidatorTest {
         final User user = new User("Palvair", "Ruddy", "motdepssse", USERNAME);
         SecurityContextHolder.getContext().setAuthentication(new TestingAuthenticationToken(user, null));
 
-        when(jwtTokenHelper.validateToken(TOKEN, user)).thenReturn(false);
+        when(jwtTokenHelper.validateToken(TOKEN)).thenReturn(null);
 
-        final UserDetails userDetails = tokenValidator.validateToken(TOKEN);
+        final Authentication userDetails = tokenValidator.validateToken(TOKEN);
 
         assertThat(userDetails).isNull();
     }
 
     @Test
     void should_return_null_when_username_not_found_in_token() {
-        when(jwtTokenHelper.validateToken(TOKEN, null)).thenReturn(false);
+        when(jwtTokenHelper.validateToken(TOKEN)).thenReturn(null);
 
-        final UserDetails userDetails = tokenValidator.validateToken(TOKEN);
+        final Authentication userDetails = tokenValidator.validateToken(TOKEN);
 
         assertThat(userDetails).isNull();
     }
